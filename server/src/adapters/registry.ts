@@ -123,6 +123,16 @@ import {
   agentConfigurationDoc as openclawGatewayAgentConfigurationDoc,
   models as openclawGatewayModels,
 } from "@paperclipai/adapter-openclaw-gateway";
+import {
+  execute as openAiCompatibleExecute,
+  getConfigSchema as getOpenAiCompatibleConfigSchema,
+  sessionCodec as openAiCompatibleSessionCodec,
+  testEnvironment as openAiCompatibleTestEnvironment,
+} from "@paperclipai/adapter-openai-compatible/server";
+import {
+  agentConfigurationDoc as openAiCompatibleAgentConfigurationDoc,
+  models as openAiCompatibleModels,
+} from "@paperclipai/adapter-openai-compatible";
 import { listCodexModels, refreshCodexModels } from "./codex-models.js";
 import { listCursorModels } from "./cursor-models.js";
 import {
@@ -792,6 +802,24 @@ const cursorCloudAdapter: ServerAdapterModule = {
   getConfigSchema: getCursorCloudConfigSchema,
 };
 
+// Runs a Chat Completions tool loop inside the server process; no CLI or
+// remote environment is involved, so it is issued a local run JWT.
+const openAiCompatibleAdapter: ServerAdapterModule = {
+  type: "openai_compatible",
+  runtimeToolDelivery: "invocation_context",
+  execute: openAiCompatibleExecute,
+  testEnvironment: (ctx) => openAiCompatibleTestEnvironment(ctx),
+  sessionCodec: openAiCompatibleSessionCodec,
+  sessionManagement: getAdapterSessionManagement("openai_compatible") ?? undefined,
+  models: openAiCompatibleModels,
+  supportsLocalAgentJwt: true,
+  supportsInstructionsBundle: true,
+  instructionsPathKey: "instructionsFilePath",
+  requiresMaterializedRuntimeSkills: false,
+  agentConfigurationDoc: openAiCompatibleAgentConfigurationDoc,
+  getConfigSchema: getOpenAiCompatibleConfigSchema,
+};
+
 const geminiLocalAdapter: ServerAdapterModule = {
   type: "gemini_local",
   runtimeToolDelivery: "environment",
@@ -963,6 +991,7 @@ function registerBuiltInAdapters() {
     hermesGatewayAdapter,
     hermesLocalAdapter,
     openclawGatewayAdapter,
+    openAiCompatibleAdapter,
     processAdapter,
     httpAdapter,
   ]) {

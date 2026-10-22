@@ -1403,6 +1403,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   const showThinkingEffort = !(harnessType === "pi_local" && fieldsAdapterType === "paperclip_runner")
     && adapterType !== "gemini_local"
     && adapterType !== "cursor_cloud"
+    && adapterType !== "openai_compatible"
     && (adapterType !== "paperclip_runner" || isRunnerHarness);
   const codexSearchEnabled = adapterType === "codex_local"
     ? (isCreate ? Boolean(val!.search) : eff("adapterConfig", "search", Boolean(config.search)))
